@@ -70,7 +70,7 @@ class TFBaseModel(object):
         loss_averaging_window=100,
         validation_batch_size=64,
         log_dir='logs',
-        checkpoint_dir='checkpoints',
+        checkpoint_dir='checkpoints/new',
         prediction_dir='predictions',
     ):
 
@@ -161,7 +161,7 @@ class TFBaseModel(object):
                     val_feed_dict.update({self.is_training: False})
 
                 results = self.session.run(
-                    fetches=[self.loss] + self.metrics.values(),
+                    fetches=[self.loss] + list(self.metrics.values()),
                     feed_dict=val_feed_dict
                 )
                 val_loss = results[0]

@@ -15,8 +15,8 @@ def get_stroke_sequence(filename):
     for stroke in strokes:
         for i, point in enumerate(stroke):
             coords.append([
-                int(point.attrib['x']),
-                -1*int(point.attrib['y']),
+                int(float(point.attrib['x'])),
+                -1*int(float(point.attrib['y'])),
                 int(i == len(stroke) - 1)
             ])
     coords = np.array(coords)
@@ -51,12 +51,16 @@ def collect_data():
 
     # low quality samples (selected by collecting samples to
     # which the trained model assigned very low likelihood)
+    # blacklist = set(np.load('data/blacklist.npy'))
+    np_load_old = np.load
+    # modify the default parameters of np.load
+    np.load = lambda *a,**k: np_load_old(*a, allow_pickle=True, **k)
     blacklist = set(np.load('data/blacklist.npy'))
 
     stroke_fnames, transcriptions, writer_ids = [], [], []
     for i, fname in enumerate(fnames):
         print(i, fname)
-        if fname == 'data/raw/ascii/z01/z01-000/z01-000z.txt':
+        if fname == 'data/raw/ascii/z01\z01-000\z01-000z.txt':
             continue
 
         head, tail = os.path.split(fname)
@@ -108,7 +112,7 @@ if __name__ == '__main__':
     c = np.zeros([len(stroke_fnames), drawing.MAX_CHAR_LEN], dtype=np.int8)
     c_len = np.zeros([len(stroke_fnames)], dtype=np.int8)
     w_id = np.zeros([len(stroke_fnames)], dtype=np.int16)
-    valid_mask = np.zeros([len(stroke_fnames)], dtype=np.bool)
+    valid_mask = np.zeros([len(stroke_fnames)], dtype=np.bool_)
 
     for i, (stroke_fname, c_i, w_id_i) in enumerate(zip(stroke_fnames, transcriptions, writer_ids)):
         if i % 200 == 0:
